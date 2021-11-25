@@ -33,8 +33,8 @@ class MainClass:ObserverInterface {
   MainClass()
   {
     MyOptions = new OptionsClass();
-    MyOptions.CompileDate     = "17 October 2021";
-    MyOptions.ScriptName      = "JSON Enscript Carver (EnCase 2021-11-18)";
+    MyOptions.CompileDate     = "25 November 2021";
+    MyOptions.ScriptName      = "VICSCarver Enscript (EnCase 2021-11-18)";
     MyOptions.VersionNum      = "1.0.0.0";
     MyOptions.VersionMajor    = 1;
     MyOptions.VersionMinor    = 0;
