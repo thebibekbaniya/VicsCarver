@@ -1,0 +1,34 @@
+include "..\\..\\Classes\\OptionsClass"
+
+
+class VersionController {
+
+  OptionsClass MyOptions;
+
+
+  VersionController(OptionsClass MyOptions):
+    MyOptions = MyOptions
+    {
+    }
+
+  bool CheckVersion(){
+
+    // Is this the same major version
+    if(SystemClass::MajorVersion() < MyOptions.VersionMajor)
+      return false;
+
+    // Is this the same minor version
+    if(SystemClass::MinorVersion() < MyOptions.VersionMinor)
+      return false;
+
+      // same submajor
+      if(SystemClass::SubMajorVersion() < MyOptions.VersionSubMajor)
+        return false;
+
+        // sam subMinor
+        if(SystemClass::SubMinorVersion() < MyOptions.VersionSubMinor)
+          return false;
+        else
+          return true;
+  }
+}

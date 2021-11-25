@@ -1,0 +1,295 @@
+include "..\\Core Files\\Interfaces\\MoviePluginInterface"
+include "ISO Base Media Format Library\\SK_ISOBaseMediaLib.EnScript"
+
+class Mp4QuickTimeMoviePlugin;
+
+// Dialog Class exposing variables specific to this format
+
+class Mp4QtDialog: DialogClass
+{
+  Mp4QuickTimeMoviePlugin       Mp4Qt;
+  CheckBoxClass                 chkEnabled;
+  ButtonClass                   btnHelpText;
+  StringEditClass               strValidBoxes;
+  UIntEditClass                 uintMaxSizeToExtractInMB;
+
+  Mp4QtDialog(DialogClass parent, Mp4QuickTimeMoviePlugin mp4_qt) :
+    DialogClass    (parent, mp4_qt._pluginName),
+    Mp4Qt = mp4_qt,
+    chkEnabled(this, "Search for MOVs", START, START, DEFAULT, DEFAULT, 0, Mp4Qt._enabled),
+    btnHelpText(this, "Help", 275, SAME, DEFAULT, DEFAULT, 0),
+    strValidBoxes(this, "Comma-delimited list of valid box codes", START, NEXT, 300, DEFAULT, 0, Mp4Qt._validBoxes, -1, REQUIRED),
+    uintMaxSizeToExtractInMB(this, "Maximum size of file to extract (MB)", START, NEXT, 50, DEFAULT, 0,  Mp4Qt._maxSizeToExtractInMB, 1, 0x7fffffff, REQUIRED)
+  {
+  }
+
+  virtual void ChildEvent(const WindowClass::EventClass &event)
+  {
+    if (btnHelpText.Matches(event))
+    {
+      SystemClass::Message(ICONINFORMATION, Mp4Qt._pluginName, Mp4Qt._helpText);
+    }
+    super::ChildEvent(event);
+  }
+
+  virtual bool CanClose()
+  {
+    bool retval = super::CanClose();
+    if (retval)
+    {
+      String current_list = strValidBoxes.GetText();
+      retval = Mp4Qt._buildBoxList(current_list);
+      if (!retval)
+      {
+        ErrorMessage(String::Format("List of valid box codes must contain the following entries at least: {0}.", MovBoxFileClass::RequiredBoxListAsString));
+      }
+    }
+    if (retval)
+    {
+      Mp4Qt._maxSizeToExtract = Mp4Qt._maxSizeToExtractInMB * 1024 * 1024;
+    }
+    return retval;
+  }
+}
+
+
+// Actual Format class, which implements the PicturePluginInterface
+class Mp4QuickTimeMoviePlugin : MoviePluginInterface
+{
+
+  Mp4QtDialog       _dlg;
+
+  bool              _enabled;
+
+  double            _aspectRatio;
+  double            _bitDepth;
+  double            _movieLength;
+
+  int               _headerIndex;
+
+  uint              _maxSizeToExtractInMB;
+
+  long              _rangeToIgnoreSearchHits;
+  long              _maxSizeToExtract;
+
+  String            _extension;
+  String            _header;
+  String            _metaData;
+  String            _pluginName;
+  String            _version;
+  String            _validBoxes;
+  String            _helpText;
+
+  NameListClass     _validBoxesList,
+                    _requiredBoxesList;
+
+
+  // Plugin's Constructor, where the base values are set and any readable values
+  // are loaded from the Storage file
+  Mp4QuickTimeMoviePlugin() :
+    _validBoxes(BoxFileClass::KnownTopLevelBoxes),
+    _validBoxesList(),
+    _requiredBoxesList(),
+    _maxSizeToExtractInMB = 10240,
+    _pluginName("C4P Plugin - MOV"),
+    _enabled = true,
+    _extension("MOV"),
+    _header(BoxFileFactoryClass::GrepKeyword),
+    _version("1.0.0"),
+    _helpText
+    (
+      "This plugin searches for ISO base media files that are QuickTime movie files.\n\n"
+
+      "The plugin identifies each picture using the signature, '....ftypqt\\x20\\x20'.\n\n"
+
+      "ISO base media files consist of one or more top-level boxes (aka atoms) inside "
+      "of which may be other atoms stored in a hierarchical structure. Each box "
+      "contains its own length, which may be a 32-bit or 64-bit integer.\n\n"
+
+      "The plugin finds the end of this and other ISO base media files by seeking from "
+      "one top-level box to another until it reaches data that does not contain a valid "
+      "box-code (mdat, meta, moov, etc.)\n\n"
+
+      "The examiner can specify the box-codes that are to be treated as valid albeit the "
+      "ftyp, mdat, and moov codes are required -  QuickTime movies will be treated as "
+      "invalid if they don't have these boxes.\n\n"
+
+      "It's important to note that the plugin does not check the validity of each "
+      "box, so the examiner should expect some boxes to be incomplete and/or "
+      "partially overwritten if found in unused disk space. This will be "
+      "particularly relevant to the last box due to it not being bounded by "
+      "another box.\n\n"
+
+      "Report bugs, etc, to:\n\n"
+
+      Lang::AUTHOR_SIMON
+    )
+  {
+    _requiredBoxesList.Parse(MovBoxFileClass::RequiredBoxListAsString, ",");
+    _loadSettings();
+    _maxSizeToExtract = _maxSizeToExtractInMB * 1024 * 1024;
+    _buildBoxList(_validBoxes);
+  }
+
+  bool _buildBoxList(const String &current_list)
+  {
+    _validBoxesList.Close();
+    NameListClass boxes();
+    boxes.Parse(current_list, ",");
+    String t;
+    foreach (NameListClass box in boxes)
+    {
+      t = box.Name();
+      t.Trim(" ", TRIMSTART | TRIMEND);
+      if (t && !_validBoxesList.Find(t))
+      {
+        new NameListClass(_validBoxesList, t);
+      }
+    }
+    return _gotRequiredBoxTypes();
+  }
+
+  bool _gotRequiredBoxTypes()
+  {
+    bool retval;
+    if (_validBoxesList.Count() >= _requiredBoxesList.Count())
+    {
+      retval = true;
+      foreach (NameListClass required in _requiredBoxesList)
+      {
+        if (!_validBoxesList.Find(required.Name()))
+        {
+          retval = false;
+          break;
+        }
+      }
+    }
+    return retval;
+  }
+
+  void _loadSettings(){
+    StorageClass myStorage(_pluginName, 0);
+    _settings(myStorage);
+  }
+
+  void _settings(StorageClass myStorage){
+    myStorage.Value("Enabled", _enabled);
+    myStorage.Value("ValidBoxes", _validBoxes);
+    myStorage.Value("MaxSizeToExtractInMB", _maxSizeToExtractInMB);
+  }
+
+  long _validate(EntryClass e, long offset)
+  {
+    long retval;
+
+    // Reset the classwide variables
+    _aspectRatio = 0;
+    _bitDepth    = 0;
+    _movieLength = 0;
+    _metaData    = "";
+
+    EntryFileClass ef();
+
+    if(ef.Open(e, FileClass::SLACK | FileClass::NOINITIALIZE))
+    {
+      BoxFileFactoryClass factory(_validBoxesList);
+      if (MovBoxFileClass mov_box = MovBoxFileClass::TypeCast(factory.GetBoxFile(e, ef, offset)))
+      {
+        String error_message;
+        if (mov_box.Read(_maxSizeToExtract, error_message))
+        {
+          retval = mov_box.Size;
+        }
+      }
+    }
+    return retval;
+  }
+
+
+
+
+  // =======================================================================================
+  // Interface Functions that MUST be present and SHOULD tie in with the rest of your script
+
+  virtual String Version(){
+    return _version;
+  }
+  virtual MemoryFileClass GetMemoryFileClass(){
+    return null;
+  }
+  virtual bool Enabled(){
+    return _enabled;
+  }
+  virtual void SetEnabled(const bool &val){
+    _enabled = val;
+  }
+
+  virtual String Extension(){
+    return _extension;
+  }
+  virtual void SetExtension(const String &val){
+    _extension = val;
+  }
+
+  virtual String Header(){
+    return _header;
+  }
+  virtual void SetHeader(const String &val){
+    _header = val;
+  }
+
+  virtual String MetaData(){
+    return _metaData;
+  }
+
+  virtual DialogClass GetDialog(DialogClass parent){
+    _dlg = new Mp4QtDialog(parent, this);
+    return _dlg;
+  }
+
+  virtual long Validate(EntryClass e, long offset){
+    return _validate(e, offset);
+  }
+
+  virtual double AspectRatio(){
+    return _aspectRatio;
+  }
+
+  virtual double BitDepth(){
+    return _bitDepth;
+  }
+
+  virtual int HeaderIndex(){
+    return _headerIndex;
+  }
+  virtual void SetHeaderIndex(int val){
+    _headerIndex = val;
+  }
+
+  virtual void SaveSettings(){
+    StorageClass myStorage(_pluginName, StorageClass::WRITE);
+    _settings(myStorage);
+  }
+
+  virtual String PluginName(){
+    return _pluginName;
+  }
+  virtual void SetPluginName(const String &val){
+    _pluginName = val;
+  }
+  virtual long BytesPrecedingHeader(){
+    return 0;
+  }
+  virtual long RangeToIgnoreSearchHits(){
+    return _rangeToIgnoreSearchHits;
+  }
+  virtual long SmallFileLimit(){
+    return 51200;  // 50kb
+  }
+  virtual double MovieLength()
+  {
+    return _movieLength;
+  }
+  // =======================================================================================
+}
+

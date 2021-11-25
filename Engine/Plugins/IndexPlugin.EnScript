@@ -1,0 +1,271 @@
+include "..\\Core Files\\Interfaces\\IndexPluginInterface"
+
+class IndexPlugin;
+
+// Class to hold all the files that need to be written out
+class ExportClass: NameListClass{
+  EntryClass                 Entry;
+  MemoryFileClass            MemoryFile;
+
+  String                     Keyword;
+
+}
+
+
+// Dialog Class to let the user select an index file
+class PathDialog: DialogClass{
+
+  PathEditClass    txtPath;
+  String           Path;
+
+  PathDialog(DialogClass parent):
+    DialogClass    (parent, "Index Selection"),
+      txtPath      (this, "Select Index:",
+                                          10, 10, 220, 12, 0, Path, PathEditClass::FILEOPEN, "Index Files\t*.Index")
+  {
+  }
+}
+
+
+// Dialog Class exposing variables specific to this format
+class IndexDialog: DialogClass {
+
+  CheckBoxClass    chkIdx;
+
+  GroupBoxClass    grpIndexes;
+  ListEditClass    lstIndices;
+  ButtonClass      btnAddIndexes;
+  PathEditClass    txtAddIndex;
+  ButtonClass      btnAddIndex;
+
+  GroupBoxClass    grpKeywords;
+  ListEditClass    lstKeywords;
+  ButtonClass      btnAddKeywords;
+  StringEditClass  txtKeyword;
+  ButtonClass      btnAddKeyword;
+
+  StaticTextClass  txtAbout;
+
+  StaticTextClass  txtAuthor;
+
+  IndexPlugin      Idx;
+  String           newKeyword;
+  String           newPath;
+
+  IndexDialog(DialogClass parent, IndexPlugin idx) :
+    DialogClass    (parent, "Index Search Settings:"),
+      chkIdx        (this, "Search for Keywords", 10, 10, 100, 12, 0, idx._enabled),
+
+      // Index Files to Load
+      grpIndexes    (this, ""                  ,    10,  28, 370, 125, 0),
+
+      lstIndices    (this, "Index Files to Load:",  20,  35, 350,  75, 0, idx._indices,
+                                ContextClass::CANVIEWNODES | ContextClass::CANDELETENODE),
+
+      btnAddIndexes (this, "Add From Case",        295, 120,  70,  12, 0),
+      txtAddIndex   (this, "Add Index:",            20, 122, 220,  12, 0,
+                                newPath, PathEditClass::FILEOPEN, "Index Files\t*.Index"),
+      btnAddIndex   (this, "Add",                  240, 132,  30,  12, 0),
+
+
+      // Keywords to Search For
+      grpKeywords   (this, ""                  ,    10, 158, 370, 125, 0),
+
+
+      lstKeywords   (this, "Input Words (Double-Click To Prompt)",
+                                                    20, 165, 350, 75, 0, idx._keywords,
+                                ContextClass::CANVIEWNODES | ContextClass::CANDELETENODE),
+
+      btnAddKeywords(this, "Add From File",        295, 250, 70, 12, 0),
+      txtKeyword    (this, "New Keyword:",          20, 252, 110, 10, 0, newKeyword, 256, 0),
+      btnAddKeyword (this, "Add",                  130, 262, 30, 12, 0),
+
+      txtAbout      (this, "This Plugin will act differently than the 'regular' ones:\n\n" +
+                           "  - it won't search the evidence file by file\n" +
+                           "  - it will instead search the Index files you identify (above)\n" +
+                           "  - it will search for the keywords you provide (above)\n" +
+                           "  - it will extract an HTML file containing the 'transcript' of each hit, with the keyword\n" +
+                           "    highlighted in yellow\n" +
+                           "  - it will extract a specified number of bytes before and after the hit\n" +
+                           "\n"
+                           "If you choose to load a list of Keywords from a text file, note that they should be on separate " +
+                           "lines.  Multiple keywords on the same line will be treated as proximity searches, while keywords on " +
+                           "separate lines will be run independantly.",
+                                                    20, 290, 350, 150, 0),
+
+      txtAuthor    (this, "Plugin developed by:\r\n" +
+                          "\r\n" +
+                          "Trevor Fairchild\r\n" +
+                          "Electronic Crime Section\r\n" +
+                          "Ontario Provincial Police\r\n" +
+                          "C4P@e-crime.on.ca",
+                                                    250, 400, 100, 50, 0),
+      Idx = idx
+  {
+  }
+
+
+  virtual void ChildEvent(const EventClass &event) {
+    DialogClass::ChildEvent(event);
+
+    // What to do if the user click the library button
+    if(btnAddIndexes.Matches(event)){
+      DirectoryClass dir();
+      DirRootClass DirRoot(LocalMachine);
+      lstIndices.SetDataRoot(Idx._indices);
+    }
+    else if(btnAddIndex.Matches(event)){
+      if(txtAddIndex.GetText() != ""){
+        new NameListClass(Idx._indices, txtAddIndex.GetText());
+        lstIndices.SetDataRoot(Idx._indices);
+        txtAddIndex.SetText("");
+      }
+    }
+    else if(btnAddKeyword.Matches(event)){
+      if(txtKeyword.GetText() != ""){
+        new NameListClass(Idx._keywords, txtKeyword.GetText());
+        lstKeywords.SetDataRoot(Idx._keywords);
+        txtKeyword.SetText("");
+      }
+    }
+  }
+}
+
+
+// Actual Format class, which implements the PicturePluginInterface
+class IndexPlugin:IndexPluginInterface{
+
+  CaseClass         _case;
+
+  ConsoleController _console;
+
+  bool              _enabled;
+
+  //ExportClass       _exportList;
+
+  IndexDialog       _dlg;
+
+  int               _headerIndex;
+
+  long              _rangeToIgnoreSearchHits;
+
+  NameListClass     _indices;
+  NameListClass     _keywords;
+
+  String            _extension;
+  String            _header;
+  String            _pluginName;
+  String            _version;
+
+
+  // Plugin's Constructor, where the base values are set and any readable values
+  //   are loaded from the Storage file
+  IndexPlugin(CaseClass c, ConsoleController myConsole):
+    _case = c,
+    _indices(),
+    _keywords(),
+    _console = myConsole
+  {
+    _pluginName = "C4T Plugin - Index";
+    _enabled = true;
+    _extension = "HTM";
+    _header = "";
+    _loadSettings();
+    _version = "1.0.0";
+
+    //_exportList = new ExportClass(null, "", null, null, "", null);
+  }
+
+  void _loadSettings(){
+    StorageClass myStorage(_pluginName, 0);
+    _settings(myStorage);
+  }
+
+  void _settings(StorageClass myStorage){
+    myStorage.Value("idxEnabled", _enabled);
+  }
+
+
+  // the IndexPlugin is a different beast altogether.  it is not based on a standard
+  // header search, like the other plugins, but rather a recursive search of the
+  // index files provided by the user
+  //
+  // Validate will be called once at the start of the case, before the other plugin
+  // requirements are handled
+  long Run(IndexOutputController output){
+
+    return 0;
+  }
+
+
+
+
+  // =======================================================================================
+  // Interface Functions that MUST be present and SHOULD tie in with the rest of your script
+  virtual String Version(){
+    return _version;
+  }
+  virtual MemoryFileClass GetMemoryFileClass(){
+    return null;
+  }
+  virtual bool Enabled(){
+    return _enabled;
+  }
+  virtual void SetEnabled(const bool &val){
+    _enabled = val;
+  }
+
+  virtual String Extension(){
+    return _extension;
+  }
+  virtual void SetExtension(const String &val){
+    _extension = val;
+  }
+
+  virtual String Header(){
+    return _header;
+  }
+  virtual void SetHeader(const String &val){
+    _header = val;
+  }
+
+  virtual String MetaData(){
+    return "";
+  }
+
+  virtual DialogClass GetDialog(DialogClass parent){
+    _dlg = new IndexDialog(parent, this);
+    return _dlg;
+  }
+
+  virtual long Validate(EntryClass e, long offset){
+    return 0;
+  }
+
+  virtual int HeaderIndex(){
+    return _headerIndex;
+  }
+  virtual void SetHeaderIndex(int val){
+    _headerIndex = val;
+  }
+
+  virtual void SaveSettings(){
+    StorageClass myStorage(_pluginName, StorageClass::WRITE);
+    _settings(myStorage);
+  }
+
+  virtual String PluginName(){
+    return _pluginName;
+  }
+  virtual void SetPluginName(const String &val){
+    _pluginName = val;
+  }
+  virtual long BytesPrecedingHeader(){
+    return 0;
+  }
+  virtual long RangeToIgnoreSearchHits(){
+    return _rangeToIgnoreSearchHits;
+  }
+  // =======================================================================================
+}
+

@@ -1,0 +1,197 @@
+include "..\\..\\ActivePlugins"
+include "..\\..\\Classes\\OptionsClass"
+include "..\\Models\\ZipClass"
+include "AnalysisController"
+include "ConsoleController"
+include "DataController"
+include "JsonFileOutputController"
+include "SearchController"
+
+class MainController {
+
+  ActivePlugins     MyPlugins;
+  ConsoleController MyConsole;
+  DataController    MyData;
+  SearchController  MySearch;
+  OptionsClass      MyOptions;
+  ZipClass          MyZip;
+
+  JsonFileOutputController    MyOutput;
+  AnalysisController       MyAnalysisController;
+
+  MainController(ActivePlugins myPlugins, OptionsClass myOptions,
+                    JsonFileOutputController myOutput,
+                    ConsoleController myConsole,
+                    DataController myData):
+    MyPlugins = myPlugins,
+    MyOptions = myOptions,
+    MyOutput = myOutput,
+    MyConsole = myConsole,
+    MyData = myData
+  {
+    MySearch = new SearchController(MyPlugins, MyOptions, MyOutput, MyConsole);
+    //MyConsole= new ConsoleController(MyOptions);
+    MyZip = new ZipClass(MyOptions, MyOutput);
+    MyAnalysisController = new AnalysisController(MyOptions, MyOutput, MyConsole);
+  }
+
+
+
+  void Recurse_entry(EntryClass e, const String &path, bool forceSearch){
+    // There are two entry points for the script - one as a the 'regular'
+    //    and one as a "Trust Me" script, in which the user has
+    //    blue-checked a set of files and we just need to carve them out
+    // The second usage would have NO plugins
+    if(MyPlugins){
+
+      if(MyOptions.SelectedTags.Count() != 0)
+      {
+        // Is this file tagged?
+        bool isTagged = false;
+
+        if(e.Tags().GetLength() > 0)
+        {
+          foreach(String selectedTag in MyOptions.SelectedTags)
+          {
+            if(e.Tags().Contains(selectedTag))
+            {
+              isTagged = true;
+              break;
+            }
+          }
+        }
+
+        if(MyOptions.ExcludeTagged == false){
+          // Search ONLY tagged files
+          if(!isTagged)
+            return;
+        }
+        else
+        {
+          // Or search anything NOT tagged
+          if(isTagged)
+            return;
+        }
+      }
+
+
+      if(MyOptions.DebugCurrentOnly) {
+        MyOutput.ClearCurrentReport();
+      }
+
+      // Compare the Logical Size against the Volume itself - some entries are reporting Petabytes in size due to corrupted MFT entries.
+      bool b = true;
+      VolumeClass vc = e.GetVolume();
+      if(vc)
+      {
+        if(e.LogicalSize() > vc.TotalCapacity())
+          b = false;
+      }
+
+      if(b)
+      {
+        MyAnalysisController.CheckEntry(e);
+
+        if(MyAnalysisController.shouldExtract){
+          // need to extract a protected archive file
+          if(MyOutput)
+            MyOutput.CopyOutZip(e, path);
+        }
+        else if(MyAnalysisController.shouldOpen || forceSearch){
+          MySearch.SearchEntry(e, 0, path);
+        }
+        else if(MyAnalysisController.shouldOpenSlack){
+          // skip the file, but search the file slack
+          MySearch.SearchEntry(e, e.LogicalSize(), path);
+        }
+      }
+      else
+      {
+        if(MyOptions.Debug){
+            MyOutput.WriteDebug("MainController", "Reported size of Entry in case exceeds the size of the Volume.  Skipping this file.");
+            MyOutput.WriteDebug("MainController", path + e.FullPath());
+          }
+      }
+    }
+  }
+#endif
+
+
+  void Recurse(const String &path, bool forceSearch){
+    for(MyOptions.MyIter; EntryClass e = MyOptions.MyIter.GetNextEntry();) {
+      Recurse_entry(e, path, forceSearch);
+    }
+  }
+
+  bool initialized;
+
+  void Initialize(){
+
+    if(!initialized){
+      initialized = true;
+
+      // Initial values
+      if(MyOutput){
+        MyOutput.FileCount = 0;
+        MyOutput.DiskId = 1;
+        MyOutput.SubDiskId = 1;
+
+        if(MyPlugins)
+          MyOutput.Initialize(false, MyPlugins);
+        else
+          MyOutput.Initialize(true, MyPlugins);
+      }
+
+      // Initialize Database
+      MyData.SetConnection();
+
+      // Initialize LEF if required
+      if(MyOptions.CreateLef)
+      {
+        String path = MyOptions.ReportPath + "\\ProVICCarver - " + MyOptions.CaseName + "\\LEF";
+        if (!LocalMachine.PathExists(path)){
+          if(!LocalMachine.CreateFolder(path))
+            MyConsole.WriteFullLine("Could not create the LEF folder! (" + path + ")");
+        }
+
+        // Use 4GB files for the L0's, and mid-line compression
+        EvidenceFileClass ef();
+        ef.SetSegmentSize(4096);
+        ef.SetCompression(EvidenceFileClass::COMPRESSFAST);
+
+        MyOptions.Lef = new LogicalEvidenceFileClass();
+
+
+        if(!MyOptions.Lef.Open(path + "\\ProVICCarver - " + MyOptions.CaseName + ".L01", 0, ef))
+        {
+          MyConsole.WriteFullLine("Could not create the Logical Evidence File! (" + path + "\\ProVICCarver - " + MyOptions.CaseName + ".L01");
+          SystemClass::Exit();
+        }
+      }
+    }
+  }
+
+  void Start(long enabled){
+    Initialize();
+
+    if(MyOptions.SearchSelected >= 3)
+    {
+      // Current view
+      MyOptions.MyIter = new ItemIteratorClass(MyOptions.Case, ItemIteratorClass::NOPROXY | ItemIteratorClass::NOEPRECORDS, ItemIteratorClass::CURRENTVIEW);
+    }
+    else
+    {
+      // All files
+      MyOptions.MyIter = new ItemIteratorClass(MyOptions.Case, ItemIteratorClass::NOPROXY | ItemIteratorClass::NOEPRECORDS, ItemIteratorClass::ALL);
+    }
+
+    DateClass startedAt;
+    startedAt.Now();
+    MyConsole.WriteFullLine("Search Start:");
+
+    if(enabled > 0){
+      Recurse("", false);
+    }
+  }
+}
+
