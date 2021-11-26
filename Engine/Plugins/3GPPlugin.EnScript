@@ -68,7 +68,7 @@ class 3GPPlugin:MoviePluginInterface{
 
   3GPPlugin()
   {
-    _pluginName = "C4M Plugin - 3GP";
+    _pluginName = "Video Plugin - 3GP";
     _enabled = true;
     _extension = "3GP";
     _header = "ftyp"; // \\x66\\x74\\x79\\x70";  //4byte length marker, then the "ftyp" marker

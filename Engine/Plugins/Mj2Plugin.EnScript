@@ -53,7 +53,7 @@ class Mj2Plugin:MoviePluginInterface{
 
   Mj2Plugin()
   {
-    _pluginName = "C4M Plugin - MJ2";
+    _pluginName = "Video Plugin - MJ2";
     _enabled = true;
     _extension = "MJ2";
     _header = "....\\x6A\\x50\\x20\\x20";  //4byte length marker, then the "jP  " marker

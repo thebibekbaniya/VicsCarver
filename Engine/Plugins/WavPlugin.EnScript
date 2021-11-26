@@ -48,7 +48,7 @@ class WavPlugin: MoviePluginInterface{
 
   WavPlugin()
   {
-    _pluginName = "C4M Plugin - WAV";
+    _pluginName = "Video Plugin - WAV";
     _enabled = false;
     _extension = "WAV";
     _header = "RIFF....WAVE";

@@ -57,7 +57,7 @@ class BmpPlugin:PicturePluginInterface{
   //   are loaded from the Storage file
   BmpPlugin()
   {
-    _pluginName = "C4P Plugin - BMP";
+    _pluginName = "Image Plugin - BMP";
     _enabled = true;
     _extension = "BMP";
 

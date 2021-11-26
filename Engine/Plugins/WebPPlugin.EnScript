@@ -91,7 +91,7 @@ class WebpPlugin : PicturePluginInterface
     _validChunksList(),
     _requiredChunksList(),
     _maxSizeToExtractInMB = 10240,
-    _pluginName("C4P Plugin - WEBP"),
+    _pluginName("Image Plugin - WEBP"),
     _enabled = true,
     _extension(WebPFileClass::FileExtension),
     _header(WebPFileClass::GREPKeyword),

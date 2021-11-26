@@ -59,7 +59,7 @@ class GifPlugin:PicturePluginInterface{
   //   are loaded from the Storage file
   GifPlugin()
   {
-    _pluginName = "C4P Plugin - GIF";
+    _pluginName = "Image Plugin - GIF";
     _enabled = true;
     _extension = "GIF";
     _header = "GIF8[97]a"; //"\\x47\\x49\\x46\\x38[\\x39\\x37]\\x61";

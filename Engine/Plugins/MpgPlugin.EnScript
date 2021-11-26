@@ -236,7 +236,7 @@ class MpgPlugin: MoviePluginInterface{
 
   MpgPlugin()
   {
-    _pluginName = "C4M Plugin - MPG";
+    _pluginName = "Video Plugin - MPG";
     _enabled = true;
     _extension = "MPG";
     _header = "\\x00\\x00\\x01[\\xB3\\xBA]";

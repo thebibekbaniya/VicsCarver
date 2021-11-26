@@ -80,7 +80,7 @@ class Jpg64Plugin:PicturePluginInterface{
   //   are loaded from the Storage file
   Jpg64Plugin()
   {
-    _pluginName = "C4P Plugin - Base64 JPG";
+    _pluginName = "Image Plugin - Base64 JPG";
     _enabled = true;
     _extension = "JPG";
     _header = "\\x2F\\x39\\x6A\\x2F";

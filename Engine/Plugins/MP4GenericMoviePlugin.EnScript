@@ -92,7 +92,7 @@ class Mp4GenericMoviePlugin : MoviePluginInterface
     _validBoxesList(),
     _requiredBoxesList(),
     _maxSizeToExtractInMB = 10240,
-    _pluginName("C4P Plugin - MP4"),
+    _pluginName("Video Plugin - MP4"),
     _enabled = true,
     _extension("MP4"),
     _header(BoxFileFactoryClass::GrepKeyword),

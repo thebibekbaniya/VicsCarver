@@ -88,7 +88,7 @@ class HEICPlugin:PicturePluginInterface{
     _validBoxesList(),
     _requiredBoxesList(),
     _maxSizeToExtractInMB = 10240,
-    _pluginName("C4P Plugin - HEIC"),
+    _pluginName("Image Plugin - HEIC"),
     _enabled = true,
     _extension("HEIC"),
     _header(BoxFileFactoryClass::GrepKeyword),

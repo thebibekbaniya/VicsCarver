@@ -74,7 +74,7 @@ class MkvPlugin : MoviePluginInterface
   // are loaded from the Storage file
   MkvPlugin() :
     _maxSizeToExtractInMB = 10240,
-    _pluginName("C4P Plugin - MKV"),
+    _pluginName("Video Plugin - MKV"),
     _enabled = true,
     _extension("MKV"),
     _header(MKVFoundFileClass::EBMLMagicKeyword),

@@ -52,7 +52,7 @@ class AviPlugin: MoviePluginInterface{
 
   AviPlugin()
   {
-    _pluginName = "C4M Plugin - AVI";
+    _pluginName = "Video Plugin - AVI";
     _enabled = true;
     _extension = "AVI";
     _header = "RIFF"; //\\x52\\x49\\x46\\x46....\\x41\\x56\\x49\\x20\\x4C\\x49\\x53\\x54";  //4byte length marker, then the "ftyp" marker

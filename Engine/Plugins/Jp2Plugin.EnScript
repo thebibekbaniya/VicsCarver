@@ -54,7 +54,7 @@ class Jp2Plugin:PicturePluginInterface{
 
   Jp2Plugin()
   {
-    _pluginName = "C4P Plugin - JP2";
+    _pluginName = "Image Plugin - JP2";
     _enabled = true;
     _extension = "JP2";
     _header = "jP  "; //"....\\x6A\\x50\\x20\\x20";  //4byte length marker, then the "jP  " marker

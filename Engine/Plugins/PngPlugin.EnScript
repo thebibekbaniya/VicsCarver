@@ -73,7 +73,7 @@ class PngPlugin:PicturePluginInterface{
   //   are loaded from the Storage file
   PngPlugin()
   {
-    _pluginName = "C4P Plugin - PNG";
+    _pluginName = "Image Plugin - PNG";
     _enabled = true;
     _extension = "PNG";
     _header = "\\x89\\x50\\x4E\\x47\\x0D\\x0A\\x1A\\x0A";

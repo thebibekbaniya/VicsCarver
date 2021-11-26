@@ -91,7 +91,7 @@ class Mp4QuickTimeMoviePlugin : MoviePluginInterface
     _validBoxesList(),
     _requiredBoxesList(),
     _maxSizeToExtractInMB = 10240,
-    _pluginName("C4P Plugin - MOV"),
+    _pluginName("Video Plugin - MOV"),
     _enabled = true,
     _extension("MOV"),
     _header(BoxFileFactoryClass::GrepKeyword),

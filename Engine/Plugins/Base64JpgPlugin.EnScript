@@ -64,7 +64,7 @@ class Base64JpgPlugin : PicturePluginInterface
     _Header("/9j/4"),
     _WriteOption = ImageClass::JPG,
     _Version("1.0.0"),
-    _PluginName("C4P Plugin - Base64 JPG"),
+    _PluginName("Image Plugin - Base64 JPG"),
     _HelpText
     (
       "This plugin is designed to locate Base64-encoded "

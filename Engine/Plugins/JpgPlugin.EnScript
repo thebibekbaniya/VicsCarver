@@ -82,7 +82,7 @@ class JpgPlugin:PicturePluginInterface{
   //   are loaded from the Storage file
   JpgPlugin()
   {
-    _pluginName = "C4P Plugin - JPG";
+    _pluginName = "Image Plugin - JPG";
     _enabled = true;
     _extension = "JPG";
     _header = "\\xFF\\xD8\\xFF";

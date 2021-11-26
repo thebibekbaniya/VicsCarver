@@ -92,7 +92,7 @@ class Mp4_M4aPlugin : MoviePluginInterface
     _validBoxesList(),
     _requiredBoxesList(),
     _maxSizeToExtractInMB = 10240,
-    _pluginName("C4P Plugin - M4A"),
+    _pluginName("Video Plugin - M4A"),
     _enabled = false,
     _extension("M4A"),
     _header(BoxFileFactoryClass::GrepKeyword),

@@ -60,7 +60,7 @@ class WmfRtfPlugin:PicturePluginInterface{
 
   WmfRtfPlugin()
   {
-    _pluginName = "C4P Plugin - Embedded WMF";
+    _pluginName = "Image Plugin - Embedded WMF";
     _enabled = true;
     _extension = "WMF";
     _header = "\\x30\\x31\\x30\\x30\\x30\\x39\\x30\\x30\\x30\\x30\\x30[\\x31|\\x33]";

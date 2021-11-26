@@ -714,7 +714,7 @@ class FlvPlugin:MoviePluginInterface{
   //   are loaded from the Storage file
   FlvPlugin()
   {
-    _pluginName = "C4M Plugin - FLV";
+    _pluginName = "Video Plugin - FLV";
     _enabled = true;
     _extension = "FLV";
     _header = "\\x46\\x4C\\x56";

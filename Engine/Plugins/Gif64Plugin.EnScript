@@ -63,7 +63,7 @@ class Gif64Plugin:PicturePluginInterface{
   //   are loaded from the Storage file
   Gif64Plugin()
   {
-    _pluginName = "C4P Plugin - Base64 GIF";
+    _pluginName = "Image Plugin - Base64 GIF";
     _enabled = true;
     _extension = "GIF";
     _header = "\\x52\\x30\\x6C\\x47\\x4F\\x44[\\x6C\\x64]\\x68";

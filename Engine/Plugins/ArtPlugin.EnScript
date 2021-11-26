@@ -71,7 +71,7 @@ class ArtPlugin : PicturePluginInterface{
   //   are loaded from the Storage file
   ArtPlugin()
   {
-    _pluginName = "C4P Plugin - ART";
+    _pluginName = "Image Plugin - ART";
     _enabled = false;
     _extension = "ART";
     _header = "\\x4A\\x47[\\x03\\x04]\\x0E";

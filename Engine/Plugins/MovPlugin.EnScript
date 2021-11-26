@@ -58,7 +58,7 @@ class MovPlugin: MoviePluginInterface{
 
   MovPlugin()
   {
-    _pluginName = "C4M Plugin - MOV";
+    _pluginName = "Video Plugin - MOV";
     _enabled = true;
     _extension = "MOV";
     _header = "free|pnot|skip|wide|mdat|moov|junk|pict|uuid";
