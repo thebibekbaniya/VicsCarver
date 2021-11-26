@@ -14,7 +14,7 @@ class TriageValidateDialog : DialogClass {
 
 
   TriageValidateDialog(OptionsClass myOptions, HelpController myHelp, ActivePlugins myActivePlugins) :
-    DialogClass    (null, "C4All Triage: Validation and Extraction"),
+    DialogClass    (null, "VicsCarver Triage: Validation and Extraction"),
       dlgValidate    (this, myOptions, myHelp, myActivePlugins),
       dlgReport      (this, myOptions, myHelp),
       dlgExclude     (this, myOptions, myHelp)

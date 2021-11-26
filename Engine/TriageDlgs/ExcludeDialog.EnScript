@@ -21,7 +21,7 @@ class ExcludeDialog: DialogClass{
     DialogClass(parent, "Exclusionary Options:"),
     grpJunk(this, "Pre-Categorization:", 12, 7, 274, 200, 0),
     radJunk(this, "Ignore a Category:", 30, 20, 85, 10, 0, myOptions.ExcludePreCatVal, "None\tCategory 1\tCategory 2\tCategory 3\tCategory 4\tCategory 5\tCategory 6\tCategory 7\tCategory 8\tCategory 9"),
-    txtJunk(this, "Although this Enscript has been re-written to provide a JSON output it still can make use of existing C4P Hash Database. As such 'Junk' can be removed\n\n" +
+    txtJunk(this, "Although this Enscript has been re-written to provide a JSON output it still can make use of existing Hash Database. As such 'Junk' can be removed\n\n" +
                   "This category holds all MD5 hash values of pictures which are 'Known Not Notable'.\n\n" +
                   "In order to reduce the overall size of your JSON Package (made by this script) " +
                   "you can choose to NOT export any pre-categorization matches to your 'Junk' category.\n\n" +

@@ -27,9 +27,9 @@ class TriageEntryPointDialog: DialogClass {
 
 
   TriageEntryPointDialog(DialogClass parent, OptionsClass myOptions, HelpController myHelp, ActivePlugins myActivePlugins) :
-    DialogClass    (parent, "C4All Triage Entry Point"),
+    DialogClass    (parent, "VicsCarver Triage Entry Point"),
       imgMain        (this, "", 10, 10, 84, 62, ImageWindowClass::SCALE),
-      lblTitle       (this, "Welcome to the C4All v2 Triage EnScript\n" +
+      lblTitle       (this, "Welcome to the VicsCarver Triage EnScript\n" +
                             "\n" +
                             "Developed by:\n" +
                             "                              Trevor Fairchild\n" +

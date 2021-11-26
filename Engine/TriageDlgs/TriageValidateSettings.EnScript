@@ -35,10 +35,10 @@ class TriageValidateSettings : DialogClass {
   ButtonClass       btnHelp;
 
   TriageValidateSettings(DialogClass parent, OptionsClass myOptions, HelpController myHelp, ActivePlugins myActivePlugins) :
-      DialogClass    (parent, "C4All Triage: Main Setting"),
+      DialogClass    (parent, "VicsCarver Triage: Main Setting"),
 
       // C4P Disclosure Package Options
-      grpOutput    (this, "C4P/C4M Disclosure Package Options",  10,   8, 300, 86, 0),
+      grpOutput    (this, "VicsCarver Disclosure Package Options",  10,   8, 300, 86, 0),
       txtFolder    (this, "Create Package here:",            30,  19, 260, 12, 0, myOptions.ReportPath, WindowClass::REQUIRED),
       txtSqlite    (this, "Location of Search Hit Database:",30,  50, 260, 12, 0, myOptions.SqlitePath, 512, WindowClass::DISABLED),
       chkBook      (this, "Create a Bookmark for every file that is extracted",

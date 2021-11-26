@@ -31,7 +31,7 @@ class TriageSearchSettings : DialogClass {
   int               ActionVal; // 0 = Cancel; 1 = ShowProgress
 
   TriageSearchSettings(DialogClass parent, OptionsClass myOptions, HelpController myHelp, ActivePlugins myActivePlugins) :
-    DialogClass    (parent, "C4All Triage: Search for pictures and Movies"),
+    DialogClass    (parent, "VicsCarver Triage: Search for pictures and Movies"),
       radWhere       (this, "Where would you like to search?",   10, 8, 220, 40, 0, myOptions.TriageSearchType, "Allocated Files Only (recommended Step 1)\t" +
                                                                                                                 "Unallocated Clusters Only (recommended Step 2)\t" +
                                                                                                                 "Allocated and Unallocated togeter"),
@@ -152,8 +152,8 @@ class TriageSearchSettings : DialogClass {
   {
     // On the fly, build a name list representing the plugins that are available
     PluginListClass Plugins(null, false, "", "", null, "");
-    PluginListClass PicPlugins(Plugins, false, "C4P Plugins", "C4P Plugins", null, "");
-    PluginListClass MovPlugins(Plugins, false, "C4M Plugins", "C4M Plugins", null, "");
+    PluginListClass PicPlugins(Plugins, false, "Image Plugins", "Image Plugins", null, "");
+    PluginListClass MovPlugins(Plugins, false, "Video Plugins", "Video Plugins", null, "");
 
     foreach(PluginList p in MyActivePlugins.myPlugins){
       foreach(SymbolClass::InheritClass ic in p.Plugin.DynamicType().InheritList()){
@@ -168,7 +168,7 @@ class TriageSearchSettings : DialogClass {
 
     // Create a manual handler for this list, which defines how and what we will display
     IconClass iconid;
-    AutoHandlerClass  handler(Plugins.DynamicType(), "C4All Plugins", true, "", iconid);
+    AutoHandlerClass  handler(Plugins.DynamicType(), "VicsCarver Plugins", true, "", iconid);
 
     TreeTableEditClassDialog dlg(this, Plugins, handler, "Picture");
 
