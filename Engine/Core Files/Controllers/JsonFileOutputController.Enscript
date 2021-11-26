@@ -82,7 +82,7 @@ class JsonFileOutputController {
     }
 
     String GetIndexPath(){
-        String val = MyReportPath + "\\Enscript Index.json";
+        String val = MyReportPath + "\\Index.json";
         return val;
     }
 
@@ -121,7 +121,7 @@ class JsonFileOutputController {
         note.SetComment("EnScript Compile Date: " + MyOptions.CompileDate);
 
         // Case Root
-        MyReportPath = MyOptions.ReportPath + "\\VicCarver - " + MyOptions.CaseName;
+        MyReportPath = MyOptions.ReportPath + "\\VicsCarver-" + MyOptions.CaseName;
         if (!LocalMachine.PathExists(MyReportPath)){
             if(!LocalMachine.CreateFolder(MyReportPath))
                 MyConsole.WriteFullLine("Could not create the Case Root! (" + MyReportPath  + ")");

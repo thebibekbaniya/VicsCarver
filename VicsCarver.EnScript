@@ -36,10 +36,10 @@ class MainClass:ObserverInterface {
     MyOptions.CompileDate     = "25 November 2021";
     MyOptions.ScriptName      = "VICSCarver Enscript (EnCase 2021-11-18)";
     MyOptions.VersionNum      = "1.0.0.0";
-    MyOptions.VersionMajor    = 1;
-    MyOptions.VersionMinor    = 0;
-    MyOptions.VersionSubMajor = 0;
-    MyOptions.VersionSubMinor = 0;
+    MyOptions.VersionMajor    = 21;
+    MyOptions.VersionMinor    = 3;
+    MyOptions.VersionSubMajor = 1;
+    MyOptions.VersionSubMinor = 4;
 
     // This is the only legitimate construction of the ConsoleController
     MyConsole = new ConsoleController(MyOptions);
@@ -131,7 +131,7 @@ class MainClass:ObserverInterface {
       String version = MyOptions.VersionMajor + "." + MyOptions.VersionMinor + "." +
                        MyOptions.VersionSubMajor + "." + MyOptions.VersionSubMinor;
 
-      MyConsole.WriteLine("Debugging:: Loading any saved data about the script ...\n");
+      MyConsole.WriteLine("Loading any saved data about the script ...\n");
       // Step 1:  Load any saved data about this Script
       MyOptions.SetCase(c);
       SettingsController sc(MyOptions);
@@ -139,13 +139,13 @@ class MainClass:ObserverInterface {
 
       MyConsole.SaveConsoleChanged(MyOptions.SaveConsole);
 
-      MyConsole.WriteLine("Debugging:: Checking version of Encase against this script ...");
+      MyConsole.WriteLine("Checking version of Encase against this script ...");
       // Step 2:  Check the version of EnCase against this Script;
       VersionController vc(MyOptions);
       if(vc.CheckVersion() == false){
       }
 
-      MyConsole.WriteLine("Debugging:: Script tested against Encase");
+      MyConsole.WriteLine("Script tested against Encase");
       // Step 4:  Additional settings data
       MyOptions.Comments = "Script Tested Against EnCase v" + version;
       sc.SetCaseName(c.Name());
@@ -229,15 +229,15 @@ class MainClass:ObserverInterface {
           // TODO - Change Logical Evidence file names and creation
           if(MyOptions.CreateLef)
           {
-            AddFileToLef(MyOptions.ReportPath + "\\ProVICCarver - " + MyOptions.CaseName + "\\Enscript Index.json");
-            AddFileToLef(MyOptions.ReportPath + "\\ProVICCarver - " + MyOptions.CaseName + "\\Case Report.xml");
-            AddFileToLef(MyOptions.ReportPath + "\\ProVICCarver - " + MyOptions.CaseName + "\\Victim Report.xml");
-            AddFileToLef(MyOptions.ReportPath + "\\ProVICCarver - " + MyOptions.CaseName + "\\Results.txt");
+            AddFileToLef(MyOptions.ReportPath + "\\VicsCarver-" + MyOptions.CaseName + "\\Index.json");
+            AddFileToLef(MyOptions.ReportPath + "\\VicsCarver-" + MyOptions.CaseName + "\\Case Report.xml");
+            AddFileToLef(MyOptions.ReportPath + "\\VicsCarver-" + MyOptions.CaseName + "\\Victim Report.xml");
+            AddFileToLef(MyOptions.ReportPath + "\\VicsCarver-" + MyOptions.CaseName + "\\Results.txt");
 
-            AddFileToLef(MyOptions.ReportPath + "\\ProVICCarver - " + MyOptions.CaseName + "\\Enscript Index.json");
-            AddFileToLef(MyOptions.ReportPath + "\\ProVICCarver - " + MyOptions.CaseName + "\\Case Report.xml");
-            AddFileToLef(MyOptions.ReportPath + "\\ProVICCarver - " + MyOptions.CaseName + "\\Victim Report.xml");
-            AddFileToLef(MyOptions.ReportPath + "\\ProVICCarver - " + MyOptions.CaseName + "\\Results.txt");
+            AddFileToLef(MyOptions.ReportPath + "\\VicsCarver-" + MyOptions.CaseName + "\\Index.json");
+            AddFileToLef(MyOptions.ReportPath + "\\VicsCarver-" + MyOptions.CaseName + "\\Case Report.xml");
+            AddFileToLef(MyOptions.ReportPath + "\\VicsCarver-" + MyOptions.CaseName + "\\Victim Report.xml");
+            AddFileToLef(MyOptions.ReportPath + "\\VicsCarver-" + MyOptions.CaseName + "\\Results.txt");
 
           }
 
