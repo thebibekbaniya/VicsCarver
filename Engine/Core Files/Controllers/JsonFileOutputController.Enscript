@@ -742,6 +742,7 @@ class JsonFileOutputController {
         String lineValue, startingComma;
         String amcessed, created, written, modified, deleted;
         bool isPrecategorized, isDeleted, isUnallocated;
+        long physicalLocation;
         String fullPath, fileNameOnly, pathWithoutFileName, calcFullPath;    //TODO Extract filename and calcFullpath
 
         if(pc.Offset == 0){
@@ -751,6 +752,8 @@ class JsonFileOutputController {
             modified = ReturnDateString(pc.Entry.Modified());
             deleted = ReturnDateString(pc.Entry.Deleted());
         }
+        
+        physicalLocation = pc.Entry.PhysicalLocation() >=  9223372036854775807 ? 0 : pc.Entry.PhysicalLocation();
 
         created = created.GetLength() > 0 ? ("\"Created\": \""+ created+"\",\r\n") : "";   
         written = written.GetLength() > 0 ? ("\"Written\": \""+ written+"\",\r\n") : ""; 
@@ -781,7 +784,7 @@ class JsonFileOutputController {
 							"\"FilePath\": \""                     + pathWithoutFileName                    +"\",\r\n"+
 							created + written + amcessed +
 							"\"Unallocated\": "                    + ConvertBoolToString(isUnallocated) +",\r\n"+
-                            "\"PhysicalLocation\": \""             + pc.Entry.PhysicalLocation() +"\",\r\n"+
+                            "\"PhysicalLocation\": \""             + physicalLocation               +"\",\r\n"+
                             "\"Deleted\": "                        + ConvertBoolToString(isDeleted) +",\r\n"+
 							"\"FileOffset\": \""                   + pc.Offset                   +"\",\r\n"+
 							"\"Monikers\": \""                     + pc.Monikers                 +"\",\r\n"+
@@ -813,6 +816,7 @@ class JsonFileOutputController {
         String lineValue, startingComma;
         String amcessed, created, written, modified, deleted;
         bool isPrecategorized, isDeleted, isUnallocated;
+        long physicalLocation;
         String fullPath, fileNameOnly, pathWithoutFileName, calcFullPath;     //TODO Extract filename and calcFullpath
 
         if(mc.Offset == 0){
@@ -822,6 +826,8 @@ class JsonFileOutputController {
             modified = ReturnDateString(mc.Entry.Modified());
             deleted = ReturnDateString(mc.Entry.Deleted());
         }
+
+        physicalLocation = mc.Entry.PhysicalLocation() >=  9223372036854775807 ? 0 : mc.Entry.PhysicalLocation();
 
         created = created.GetLength() > 0 ? ("\"Created\": \""+ created+"\",\r\n") : "";   
         written = written.GetLength() > 0 ? ("\"Written\": \""+ written+"\",\r\n") : ""; 
@@ -850,7 +856,7 @@ class JsonFileOutputController {
         				    "\"FilePath\": \""                + pathWithoutFileName                    +"\",\r\n"+
         				    created+ written+ amcessed+
                             "\"Unallocated\": "               + ConvertBoolToString(isUnallocated) +",\r\n"+
-        				    "\"PhysicalLocation\": \""        + mc.Entry.PhysicalLocation() +"\",\r\n"+
+        				    "\"PhysicalLocation\": \""        + physicalLocation            +"\",\r\n"+
         				    "\"FileSize\": \""                + mc.FileLength               +"\",\r\n"+
         				    "\"SourceID\": \""                + ""                          +"\",\r\n"+
                             "\"Deleted\": "                   + ConvertBoolToString(isDeleted) +",\r\n"+
