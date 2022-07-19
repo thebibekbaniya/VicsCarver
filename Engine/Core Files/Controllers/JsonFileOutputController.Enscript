@@ -768,7 +768,7 @@ class JsonFileOutputController {
         pathWithoutFileName.Replace("\\" + fileNameOnly, "");
         pathWithoutFileName.Replace("\\", "\\\\");
 
-        calcFullPath = "\\\\" + hash.SubString(0,1) +  "\\\\" + hash.SubString(1,1) + "\\\\" + fileName;
+        calcFullPath = hash.SubString(0,1) +  "\\\\" + hash.SubString(1,1) + "\\\\" + fileName;
         
         isPrecategorized = category > 0;
         isDeleted = deleted.GetLength() > 0;
@@ -841,7 +841,7 @@ class JsonFileOutputController {
         pathWithoutFileName.Replace("\\" + fileNameOnly, "");
         pathWithoutFileName.Replace("\\", "\\\\");
 
-        calcFullPath = "\\\\" + hash.SubString(0,1) +  "\\\\" + hash.SubString(1,1) + "\\\\" + fileName;
+        calcFullPath = hash.SubString(0,1) +  "\\\\" + hash.SubString(1,1) + "\\\\" + fileName;
         isPrecategorized = category > 0;
         isDeleted = deleted.GetLength() > 0;
         isUnallocated = mc.Offset > 0;
