@@ -743,7 +743,7 @@ class JsonFileOutputController {
         String amcessed, created, written, modified, deleted;
         bool isPrecategorized, isDeleted, isUnallocated;
         long physicalLocation;
-        String fullPath, fileNameOnly, pathWithoutFileName, calcFullPath;    //TODO Extract filename and calcFullpath
+        String fullPath, fileNameOnly, pathWithoutFileName, calcFullPath, calcFileName;    //TODO Extract filename and calcFullpath
 
         if(pc.Offset == 0){
             created = ReturnDateString(pc.Entry.Created());
@@ -763,22 +763,24 @@ class JsonFileOutputController {
 
         fullPath = path + pc.Entry.TruePath();
         fileNameOnly = fullPath.GetFilename();
-        
+        calcFileName = fileName;
+
         pathWithoutFileName = fullPath;
         pathWithoutFileName.Replace("\\" + fileNameOnly, "");
         pathWithoutFileName.Replace("\\", "\\\\");
 
-        calcFullPath = hash.SubString(0,1) +  "\\\\" + hash.SubString(1,1) + "\\\\" + fileName;
-        
+        fullPath.Replace("\"", "\\\"");
+        calcFileName.Replace("\"", "\\\"");
+        fileNameOnly.Replace("\"", "\\\""); 
+        pathWithoutFileName.Replace("\"", "\\\"");
+
+        calcFullPath = hash.SubString(0,1) +  "\\\\" + hash.SubString(1,1) + "\\\\" + calcFileName;
         isPrecategorized = category > 0;
         isDeleted = deleted.GetLength() > 0;
         isUnallocated = pc.Offset > 0;
 
         lineValue = startingComma + "{\r\n" +
-                        "\"odata.id\": \"Media(\\\""            + FileCount                         +"\\\")\",\r\n"+
-					    "\"MediaFiles@odata.navigationLinkUrl\": \"/Media("+ hash                   +")/MediaFiles\",\r\n"+
                         "\"MediaFiles\": [{"                  +
-                            "\"Media@odata.navigationLinkUrl\": \"/MediaFiles(FileName='"+fileNameOnly+"',FilePath='"+ pathWithoutFileName+"',MD5="+ hash+")/Media\",\r\n"+
 							"\"MD5\": \""                          + hash                        +"\",\r\n"+
 							"\"FileName\": \""                     + fileNameOnly                    +"\",\r\n"+
 							"\"FilePath\": \""                     + pathWithoutFileName                    +"\",\r\n"+
@@ -817,7 +819,7 @@ class JsonFileOutputController {
         String amcessed, created, written, modified, deleted;
         bool isPrecategorized, isDeleted, isUnallocated;
         long physicalLocation;
-        String fullPath, fileNameOnly, pathWithoutFileName, calcFullPath;     //TODO Extract filename and calcFullpath
+        String fullPath, fileNameOnly, pathWithoutFileName, calcFullPath, calcFileName;    //TODO Extract filename and calcFullpath
 
         if(mc.Offset == 0){
             created = ReturnDateString(mc.Entry.Created());
@@ -829,28 +831,31 @@ class JsonFileOutputController {
 
         physicalLocation = mc.Entry.PhysicalLocation() >=  9223372036854775807 ? 0 : mc.Entry.PhysicalLocation();
 
-        created = created.GetLength() > 0 ? ("\"Created\": \""+ created+"\",\r\n") : "";   
+       created = created.GetLength() > 0 ? ("\"Created\": \""+ created+"\",\r\n") : "";   
         written = written.GetLength() > 0 ? ("\"Written\": \""+ written+"\",\r\n") : ""; 
         amcessed = amcessed.GetLength() > 0 ? ("\"Accessed\": \""+ amcessed+"\",\r\n") : "";
 
         startingComma = FileCount > 1 ? "," : "";
         fullPath = path + mc.Entry.TruePath();
         fileNameOnly = fullPath.GetFilename();
-        
+        calcFileName = fileName;
+
         pathWithoutFileName = fullPath;
         pathWithoutFileName.Replace("\\" + fileNameOnly, "");
         pathWithoutFileName.Replace("\\", "\\\\");
 
-        calcFullPath = hash.SubString(0,1) +  "\\\\" + hash.SubString(1,1) + "\\\\" + fileName;
+        fullPath.Replace("\"", "\\\"");
+        calcFileName.Replace("\"", "\\\"");
+        fileNameOnly.Replace("\"", "\\\""); 
+        pathWithoutFileName.Replace("\"", "\\\"");
+
+        calcFullPath = hash.SubString(0,1) +  "\\\\" + hash.SubString(1,1) + "\\\\" + calcFileName;
         isPrecategorized = category > 0;
         isDeleted = deleted.GetLength() > 0;
         isUnallocated = mc.Offset > 0;
 
         lineValue = startingComma + "{\r\n" +
-                        "\"odata.id\": \"Media(\\\""            + FileCount                         +"\\\")\",\r\n"+
-					    "\"MediaFiles@odata.navigationLinkUrl\": \"/Media("+ hash                   +")/MediaFiles\",\r\n"+
                         "\"MediaFiles\": [{"                  +
-                            "\"Media@odata.navigationLinkUrl\": \"/MediaFiles(FileName='"+fileNameOnly+"',FilePath='"+ pathWithoutFileName+"',MD5="+ hash+")/Media\",\r\n"+
 							"\"MD5\": \""                     + hash                        +"\",\r\n"+
         				    "\"FileName\": \""                + fileNameOnly                    +"\",\r\n"+
         				    "\"FilePath\": \""                + pathWithoutFileName                    +"\",\r\n"+
